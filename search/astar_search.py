@@ -47,15 +47,15 @@ class AStarSearch(object):
         step = 0
         while frontier:
             step+=1
-            print 'Step: ',step
+            
             node = frontier.pop()
             assert node != None and node.state != None, "Estratto un nodo None"
-            
-
-
+            print '---- CURRENT NODE ----'
+            print node.state
             if problem.goal_test(node.state):
                 return node, len(explored)
             explored.add(node.state)
+            
             for child in node.expand(problem):
                 assert child != None and child.state != None
                 if child.state not in explored and child not in frontier:
@@ -73,6 +73,9 @@ class AStarSearch(object):
         You need to specify the h function when you call astar_search, or
         else in your Problem subclass."""
         h = self.__memoize(h or problem.h, 'h')
-        return self.__best_first_graph_search(problem, lambda n: n.path_cost + h(n))
+        def heuristic(n):
+            v = h(n)
+            return n.path_cost + v
+        return self.__best_first_graph_search(problem, heuristic)
 
     

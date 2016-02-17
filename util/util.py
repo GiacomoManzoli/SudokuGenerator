@@ -63,12 +63,15 @@ class PriorityQueue(Queue):
         update(self, A=[], order=order, f=f)
     def append(self, item):
         assert item != None, 'Tentativo di aggiunta di un item None'
-       
+        # Se ci sono due item con la stessa f(item) l'aggiunta viene fatta in coda (a destra)
+        # della serie di item con la stessa f.
+        # Garantendo comunque di avere una coda ordinata
         bisect.insort(self.A, (self.f(item), item))
     def __len__(self):
         return len(self.A)
     def pop(self):
         if self.order == min:
+            #print [ x[0] for x in self.A[:]]
             return self.A.pop(0)[1]
         else:
             return self.A.pop()[1]

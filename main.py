@@ -5,6 +5,7 @@ from sudoku import RandomSudokuGenerator, AStarSudokuGenerator
 
 
 generator = AStarSudokuGenerator()
+#generator = RandomSudokuGenerator()
 
 s, l, x, y = generator.generate_sudoku()
 

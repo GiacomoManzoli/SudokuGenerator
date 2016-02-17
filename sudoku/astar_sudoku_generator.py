@@ -45,7 +45,19 @@ class SudokuGenerationProblem(Problem):
         iterator, rather than building them all at once."""
         # Le azioni possibili in un determinato stato
         # sono la rimozione di un elemento nella cella (i,j)
-        return state.filled_cell()
+        # state.filled_cell() ritorna la lista di chiavi degli elementi del sudoku
+        # l'ordinamento della lista è dato dal valore hash delle chiavi
+        actions = state.filled_cell()
+        #actions.sort() # Richiede un tempo bliblico
+        random.shuffle(actions) # Richiede un tempo altrettanto bibblico
+        return actions
+        #good_actions = []
+        #for action in actions:
+        #    s = self.result(state, action)
+        #    (sols, b, t) = self.__sudoku_solver.solve(s, max_sol =2)
+        #    if len(sols) == 1:
+        #        good_actions.append(action)
+        #return good_actions
 
     def result(self, state, action):
         # state : Sudoku
@@ -62,7 +74,9 @@ class SudokuGenerationProblem(Problem):
         state to self.goal, as specified in the constructor. Override this
         method if checking against a single self.goal is not enough."""
         (sols, b, t) = self.__sudoku_solver.solve(state, max_sol = 2)
-        return state.difficulty == self.goal and len(sols) == 1
+        print 'Diff: %s (Target: %s)' % (state.difficulty(), self.goal)
+        print 'Sols: ', len(sols)
+        return state.difficulty() == self.goal and len(sols) == 1
 
     def path_cost(self, c, state1, action, state2):
         """Return the cost of a solution path that arrives at state2 from
@@ -70,7 +84,8 @@ class SudokuGenerationProblem(Problem):
         is such that the path doesn't matter, this function will only look at
         state2.  If the path does matter, it will consider c and maybe state1
         and action. The default method costs 1 for every step in the path."""
-        return c + 1
+        #return c + 1
+        return 0
 
     def value(self, state):
         """For optimization problems, each state has a value.  Hill-climbing
@@ -79,7 +94,10 @@ class SudokuGenerationProblem(Problem):
         # Minimo numero di celle da pulire per raggiungere la difficoltà desiderata
         # TODO sistemare enumeratore
         assert state != None
-        min_cell = len(state) - SudokuDifficulty.range()[-1]
+        min_cell = len(state) - SudokuDifficulty.range(self.goal)[-1]
+        # min_cell deve essere una sotto stima del numero di mosse necessarie, non può
+        # essere una valore negativo
+        min_cell = 0 if min_cell < 0 else min_cell
         (sols, b, t) = self.__sudoku_solver.solve(state, max_sol = 2)
 
         if len(sols) == 1:

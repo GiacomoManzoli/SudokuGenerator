@@ -9,7 +9,7 @@ class SudokuDifficulty(Enum):
     Hard = 3
     Evil = 4
 
-    @classmethod
+    @staticmethod
     def range(diff):
         if diff == SudokuDifficulty.Easy:
             return range(36,82)

@@ -23,9 +23,10 @@ class Node:
 
     def expand(self, problem):
         "List the nodes reachable in one step from this node."
-        new_nodes = [self.child_node(problem, action)
-                for action in problem.actions(self.state)]
-        print 'Creati %d nuovi nodi' % len(new_nodes)
+        new_nodes = [self.child_node(problem, action) for action in problem.actions(self.state)]
+        print 'Creati %d nuovi nodi, con f(this): %d' % (len(new_nodes), problem.value(self.state))
+        if problem.value(self.state) == 0:
+            print self.state
         return new_nodes
 
     def child_node(self, problem, action):
