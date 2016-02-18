@@ -3,7 +3,7 @@
 from ortools.constraint_solver import pywrapcp
 
 from sudoku import Sudoku
-
+from math import floor
 
 class SudokuSolver(object):
 
@@ -46,7 +46,6 @@ class SudokuSolver(object):
         # Euristiche per il DecisionBuilder
         var_selection_strategy = slv.CHOOSE_MIN_SIZE_LOWEST_MIN # Più efficace per trovare una singola soluzione
         if sudoku_vals == {}:
-            print 'RANDOM'
             var_selection_strategy = slv.CHOOSE_RANDOM # Utile per generare sudoku diversi se non ci sono valori fissati
 
         value_selection_strategy = slv.ASSIGN_RANDOM_VALUE # Maggiore casualità nella generazione, non influise nella risoluzione
@@ -68,3 +67,51 @@ class SudokuSolver(object):
         # obtain stats
         branches, time = slv.Branches(), slv.WallTime()
         return solutions, branches, time
+
+    def feasible_values(self, sudoku, cell):
+        '''
+        Dato un sudoku non completo, per il quale non è garantita ne la presenza, ne l'unicità della soluzione,
+        ritorna una lista di possibili valori per la cella `cell` che soddisfano i classici vincoli di un sudoku
+        '''
+        sudoku_vals = sudoku.get_dict()
+        slv = pywrapcp.Solver('sudoku_gen')
+
+        # Variabili
+        x = { (i,j) : slv.IntVar(1,9,'Cella %d,%d' %(i,j)) for i in range(9) for j in range(9)}
+        # Vincoli
+        for k in range(0,9):
+            slv.Add(slv.AllDifferent([x[(k,j)] for j in range(9)],True))
+            slv.Add(slv.AllDifferent([x[(i,k)] for i in range(9)],True))
+        for box in Sudoku.BOXES:
+            slv.Add(slv.AllDifferent([x[t] for t in box]))
+        for k in sudoku_vals:
+            slv.Add( x[k] == sudoku_vals[k] )
+
+        all_vars = x.values()
+
+        var_selection_strategy = slv.CHOOSE_MIN_SIZE_LOWEST_MIN # Più efficace per trovare una singola soluzione
+        value_selection_strategy = slv.ASSIGN_RANDOM_VALUE # Maggiore casualità nella generazione, non influise nella risoluzione
+        
+        decision_builder = slv.Phase(all_vars, var_selection_strategy, value_selection_strategy)
+        time_limit = 20000
+        search_monitors = [slv.TimeLimit(time_limit)]
+        #search_monitors.append(slv.SearchLog(500000))
+        slv.NewSearch(decision_builder, search_monitors)
+
+        values = []
+        while slv.NextSolution():
+            val = x[cell].Value()
+            if not val in values:
+                values.append(val)
+            if len(values) == 9:
+                break;
+            # Perché il nuovo vincolo abbia effetto deve essere riavviata la ricerca.
+            # Per ottenere qualcosa di simile al Minimize del branch-n-bound è necessario
+            # andare a definire un SearchMonitor customizzato, in questo caso non ne vale la pena
+            slv.EndSearch()
+            slv.Add(x[cell] != val)
+            slv.NewSearch(decision_builder, search_monitors)
+            
+        slv.EndSearch()
+        return values
+

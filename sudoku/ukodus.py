@@ -9,16 +9,19 @@ class SudokuDifficulty(Enum):
     Hard = 3
     Evil = 4
 
-    @staticmethod
-    def range(diff):
-        if diff == SudokuDifficulty.Easy:
-            return range(36,82)
-        elif diff == SudokuDifficulty.Medium:
-            return range(31,36)
-        elif diff == SudokuDifficulty.Hard:
-            return range(26,31)
-        else:
-            return range(0,26)
+    #@staticmethod
+    #def range(diff):
+    #    if diff == SudokuDifficulty.Easy:
+    #        return range(36,82)
+    #    elif diff == SudokuDifficulty.Medium:
+    #        return range(31,36)
+    #    elif diff == SudokuDifficulty.Hard:
+    #        return range(26,31)
+    #    else:
+    #        return range(17,26)
+    #@staticmethod
+    #def rate(sudoku):
+    #    return
 
 class Sudoku(object):
     '''
@@ -30,14 +33,34 @@ class Sudoku(object):
         self.__dict = dict.copy()
 
     def to_string(self):
-        s = ''
+        start = '┌'
+        end = '└'
         for i in range(9):
-            s += ' '.join('%d' % self.__dict[(i,j)] if (i,j) in self.__dict.keys() else '_' for j in range(9))
-            s += '\n'
-        return s
+            start += "─"
+            end += "─"
+            if (i == 2 or i == 5):
+                start += "┬"
+                end += "┴"
+        start += "┐\n"
+        end += "┘\n"
+        for i in range(9):
+            row = '│'
+            for j in range(9):
+                row += str(self.__dict[(i,j)]) if (i,j) in self.__dict.keys() else ' '
+                if (j == 2 or j == 5):
+                    row += "│"
+            row+="│\n"
+            if (i == 2 or i == 5):
+                row+="├───┼───┼───┤\n"
+            start+=row
+        return start + end
 
     def filled_cell(self):
         return self.__dict.keys()
+
+    def empty_cells(self):
+        c = [(i,j) for i in range(0,9) for j in range(0,9) if not (i,j) in self.filled_cell()]
+        return c
 
     def clear_cell(self, key):
         self.__dict.pop(key, None)
@@ -48,16 +71,16 @@ class Sudoku(object):
     def cell(self, key):
         return self.__dict[key]
 
-    def difficulty(self):
-        cnt_cells = len(self)
-        if cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Easy):
-            return SudokuDifficulty.Easy
-        elif cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Medium):
-            return SudokuDifficulty.Medium
-        elif cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Hard):
-            return SudokuDifficulty.Hard
-        else:
-            return SudokuDifficulty.Evil
+    #def difficulty(self):
+    #    cnt_cells = len(self)
+    #    if cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Easy):
+    #        return SudokuDifficulty.Easy
+    #    elif cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Medium):
+    #        return SudokuDifficulty.Medium
+    #    elif cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Hard):
+    #        return SudokuDifficulty.Hard
+    #    else:
+    #        return SudokuDifficulty.Evil
 
     def copy(self):
         return Sudoku(self.__dict)

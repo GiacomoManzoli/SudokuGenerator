@@ -3,3 +3,4 @@ from sudoku_solver import SudokuSolver
 from sudoku_generator import SudokuGenerator
 from random_sudoku_generator import RandomSudokuGenerator
 from astar_sudoku_generator import AStarSudokuGenerator
+from reverse_sudoku_generator import ReverseSudokuGenerator

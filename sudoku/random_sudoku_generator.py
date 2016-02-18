@@ -9,7 +9,7 @@ import random
 
 class RandomSudokuGenerator(SudokuGenerator):
 
-    def generate_sudoku(self, target = SudokuDifficulty.Evil):
+    def generate_sudoku(self, target = 25):
         '''
         Genera un sudoku rimuovendo casualemente dei valori fino a che non si ottiene un livello di difficoltà pari a quello specificato dal parametro target
         Ogni 1000 Backtrack ripristina metà valori scelti casualemente tra quelli rimossi
@@ -32,7 +32,7 @@ class RandomSudokuGenerator(SudokuGenerator):
             print '----------------------------'
             print 'Cache size', len(cache)
             # Test di uscita
-            if current_sudoku.difficulty() == target and single_solution:
+            if len(current_sudoku) == target and single_solution:
                 break;
             print 'Current values count: ', len(current_sudoku)
             print 'Single solution: ', single_solution
