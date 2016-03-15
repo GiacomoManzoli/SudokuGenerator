@@ -1,0 +1,5 @@
+method;sudoku;visited;time;solve_calls;infeasible_count;feasible_values_calls
+random;TIMEOUT;-;300;824726;8;0
+random;TIMEOUT;-;300;829769;6;0
+random;TIMEOUT;-;300;792031;1;0
+random;TIMEOUT;-;300;787182;2;0

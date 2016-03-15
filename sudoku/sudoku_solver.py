@@ -7,6 +7,11 @@ from math import floor
 
 class SudokuSolver(object):
 
+    def __init__(self):
+        self.solve_calls = 0
+        self.infeasible_count = 0
+        self.feasible_values_calls = 0
+
     def solve(self, sudoku, max_sol = 1):
         ''' Risolve un sudoku.
         - max_sol (int) specifica quante soluzioni devono essere cercate
@@ -19,6 +24,8 @@ class SudokuSolver(object):
         - branches (int)
         - time (int)
         '''        
+        self.solve_calls += 1
+
         sudoku_vals = sudoku.get_dict()
         
         slv = pywrapcp.Solver('sudoku_gen')
@@ -64,6 +71,9 @@ class SudokuSolver(object):
             
         slv.EndSearch()
 
+        if len(solutions) == 0:
+            self.infeasible_count += 1
+
         # obtain stats
         branches, time = slv.Branches(), slv.WallTime()
         return solutions, branches, time
@@ -73,7 +83,12 @@ class SudokuSolver(object):
         Dato un sudoku non completo, per il quale non è garantita ne la presenza, ne l'unicità della soluzione,
         ritorna una lista di possibili valori per la cella `cell` che soddisfano i classici vincoli di un sudoku
         '''
+        self.feasible_values_calls += 1
+
         sudoku_vals = sudoku.get_dict()
+        # Se il sudoku è vuoto, non ha senso andare a cercare tutti i possibili valori
+        if len(sudoku_vals.keys()) == 0:
+            return range(1,10)
         slv = pywrapcp.Solver('sudoku_gen')
 
         # Variabili
@@ -113,5 +128,9 @@ class SudokuSolver(object):
             slv.NewSearch(decision_builder, search_monitors)
             
         slv.EndSearch()
+
+        if len(values) == 0:
+            self.infeasible_count += 1
+
         return values
 

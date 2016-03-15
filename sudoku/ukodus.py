@@ -71,16 +71,12 @@ class Sudoku(object):
     def cell(self, key):
         return self.__dict[key]
 
-    #def difficulty(self):
-    #    cnt_cells = len(self)
-    #    if cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Easy):
-    #        return SudokuDifficulty.Easy
-    #    elif cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Medium):
-    #        return SudokuDifficulty.Medium
-    #    elif cnt_cells in SudokuDifficulty.range(SudokuDifficulty.Hard):
-    #        return SudokuDifficulty.Hard
-    #    else:
-    #        return SudokuDifficulty.Evil
+    def to_linear(self):
+        ris = ''
+        for i in range(9):
+            for j in range(9):
+                ris += str(self.__dict[(i,j)]) if (i,j) in self.__dict.keys() else '-'
+        return ris
 
     def copy(self):
         return Sudoku(self.__dict)

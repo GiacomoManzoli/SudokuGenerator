@@ -51,8 +51,8 @@ class AStarSearch(object):
             node = frontier.pop()
             assert node != None and node.state != None, "Estratto un nodo None"
             
-            print '---- CURRENT NODE ----'
-            print node.state
+            #print '---- CURRENT NODE ----'
+            #print node.state
             
             if problem.goal_test(node.state):
                 return node, len(explored)+1

@@ -8,10 +8,13 @@ class SudokuGenerator(object):
     '''
     Classe base per il generatore di Sudoku
     '''
+
+    def __init__(self, solver = SudokuSolver()):
+        self.solver = solver
+
     def generate_full_sudoku(self):
         ''' Crea un sudoku completo '''
         box_list = [b for box in Sudoku.BOXES for b in box]
-        solver = SudokuSolver()
         while True:
             # Popola alcune celle del sudoku casualmente
             # il while true serve perché il random può generare dei sudoku infeasible
@@ -20,7 +23,7 @@ class SudokuGenerator(object):
                 b = random.choice(box_list)
                 seed[b] = random.randint(1,9)
                 
-            (sols, b, t) = solver.solve(Sudoku(seed), max_sol = 10)
+            (sols, b, t) = self.solver.solve(Sudoku(seed), max_sol = 10)
             if len(sols) > 0:
                 return random.choice(sols)
 
